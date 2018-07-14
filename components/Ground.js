@@ -3,7 +3,7 @@ import {
   View,
   Image,
 } from 'react-native';
-import { vmin, vmax } from './../services/viewport';
+import { vmin, vmax } from '../services/viewport';
 
 export default ({ x, y, width, height }) => (
   <View style={{ position: 'absolute', left: x, top: y * vmax }} >

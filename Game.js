@@ -17,6 +17,7 @@ import Score from './components/Score';
 import Ground from './components/Ground';
 import Start from './components/Start';
 import StartAgain from './components/StartAgain';
+import contextWrap from './util/contextWrap';
 
 const requestAnimation = requestAnimationFrame;
 
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class Game extends Component {
+class Game extends Component {
   state = {
     rotation: 0,
   };
@@ -151,7 +152,8 @@ export default class Game extends Component {
           </View>
         </ImageBackground>
       </TouchableOpacity>
-
     );
   }
 }
+
+export default contextWrap(Game);

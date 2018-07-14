@@ -1,5 +1,5 @@
-# Flappy Bird game experiment using React-Native
+# Flappy Bird game experiment using React-Native-Context
 
-Inspiration: [Basketball game written in React Native](https://github.com/FaridSafi/react-native-basketball/)
+This is a fork of GeekyAnts' Flappy Bird implementation refactored using React Context instead of Redux.
 
-For Android and iOS using <View /> and <Image /> components
+See the original Repo here: [https://github.com/GeekyAnts/FlappyBird-ReactNative](https://github.com/GeekyAnts/FlappyBird-ReactNative)

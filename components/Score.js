@@ -4,7 +4,7 @@ import {
   Image,
 } from 'react-native';
 
-import { vmin, vmax } from './../services/viewport';
+import { vmin, vmax } from '../services/viewport';
 
 export default class Score extends Component {
   getImageSourceLink = (num) => {

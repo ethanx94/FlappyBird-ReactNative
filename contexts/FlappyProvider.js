@@ -1,4 +1,4 @@
-import { TICK, BOUNCE, START, STARTAGAIN, RUNGROUNDALWAYS } from '../constants';
+import React, { Component } from 'react';
 import {
   vmin,
   vmax,
@@ -8,6 +8,222 @@ import {
   heightOfInvisibleArea,
   positionOfPipeDown,
 } from '../services/viewport';
+import { FlappyContext } from './FlappyContext';
+
+export default class FlappyProvider extends Component {
+  state = this.initialState;
+
+  get initialState() {
+    return {
+      game: {
+        gravity: 0.0001,
+        objects: [{
+          name: 'bird',
+          position: {
+            x: 46,
+            y: 55,
+          },
+          velocity: {
+            x: 0,
+            y: 0,
+          },
+          dimension: {
+            width: 10,
+            height: 8,
+          },
+          rigid: true,
+          static: false,
+          invisible: false,
+        }, {
+          name: 'PipeUp',
+          position: {
+            x: 110,
+            y: 0,
+          },
+          velocity: {
+            x: -0.9,
+            y: 0,
+          },
+          dimension: {
+            width: 15,
+            height: heightOfPipeUp,
+          },
+          rigid: true,
+          static: true,
+          invisible: false,
+        }, {
+          name: 'PipeDown',
+          position: {
+            x: 110,
+            y: positionOfPipeDown,
+          },
+          velocity: {
+            x: -0.9,
+            y: 0,
+          },
+          dimension: {
+            width: 15,
+            height: heightOfPipeDown,
+          },
+          rigid: true,
+          static: true,
+          invisible: false,
+        }, {
+          name: 'Invisible',
+          position: {
+            x: 110,
+            y: heightOfPipeUp,
+          },
+          velocity: {
+            x: -0.9,
+            y: 0,
+          },
+          dimension: {
+            width: 15,
+            height: heightOfInvisibleArea,
+          },
+          rigid: true,
+          static: true,
+          invisible: true,
+        }, {
+          name: 'PipeUp',
+          position: {
+            x: 150,
+            y: 0,
+          },
+          velocity: {
+            x: -0.9,
+            y: 0,
+          },
+          dimension: {
+            width: 15,
+            height: heightOfPipeUp,
+          },
+          rigid: true,
+          static: true,
+          invisible: false,
+        }, {
+          name: 'PipeDown',
+          position: {
+            x: 150,
+            y: positionOfPipeDown,
+          },
+          velocity: {
+            x: -0.9,
+            y: 0,
+          },
+          dimension: {
+            width: 15,
+            height: heightOfPipeDown,
+          },
+          rigid: true,
+          static: true,
+          invisible: false,
+        }, {
+          name: 'Invisible',
+          position: {
+            x: 150,
+            y: heightOfPipeUp,
+          },
+          velocity: {
+            x: -0.9,
+            y: 0,
+          },
+          dimension: {
+            width: 15,
+            height: heightOfInvisibleArea,
+          },
+          rigid: true,
+          static: true,
+          invisible: true,
+        }, {
+          name: 'Ground',
+          position: {
+            x: 0,
+            y: 80,
+          },
+          velocity: {
+            x: -1,
+            y: 0,
+          },
+          dimension: {
+            width: 100,
+            height: heightOfGround,
+          },
+          rigid: false,
+          static: true,
+          invisible: true,
+        }, {
+          name: 'Ground',
+          position: {
+            x: 100,
+            y: 80,
+          },
+          velocity: {
+            x: -1,
+            y: 0,
+          },
+          dimension: {
+            width: 100,
+            height: heightOfGround,
+          },
+          rigid: false,
+          static: true,
+          invisible: true,
+        }],
+        score: 0,
+        gameOver: false,
+        collidedArray: [],
+        start: false,
+      },
+    };
+  }
+
+  tick = (dt) => {
+    const game = { ...this.state.game };
+    game.objects = update(game.objects, dt, game.gravity);
+    game.gameOver = checkForCollition(game.objects);
+    game.score = checkForScoreUp(game.objects, game.score, game.collidedArray).score;
+    game.collidedArray = checkForScoreUp(game.objects, game.score, game.collidedArray).collidedArray;
+    this.setState({ game });
+  };
+  bounce = () => {
+    const game = { ...this.state.game };
+    game.objects = bounce(game.objects);
+    this.setState({ game });
+  }
+  startGame = () => {
+    const game = { ...this.state.game };
+    game.start = true;
+    this.setState({ game });
+  }
+  startGameAgain = () => {
+    const game = { ...this.initialState.game };
+    game.objects[0].position.x = 50;
+    game.start = true;
+    this.setState({ game });
+  };
+  runGroundAlways = () => {
+    const game = { ...this.state.game };
+    game.objects = updateGroundPosition(game.objects);
+    this.setState({ game });
+  };
+  render() {
+    const { state, props: { children } } = this;
+    return (
+      <FlappyContext.Provider value={{
+        ...state,
+        tick: this.tick,
+        bounce: this.bounce,
+        startGame: this.startGame,
+        startGameAgain: this.startGameAgain,
+        runGroundAlways: this.runGroundAlways,
+        }}
+      >
+        {children}
+      </FlappyContext.Provider>);
+  }
+}
 
 function getUpdatedVelocity(newPosition, bird, timeLapsed, gravity) {
   let updateVelocity = bird.velocity.y + (timeLapsed * gravity);
@@ -231,196 +447,3 @@ function checkForScoreUp(gameObjects, score, collidedArray) {
     collidedArray: [],
   };
 }
-
-const startAgainState = {
-  game: {
-    gravity: 0.0001,
-    objects: [{
-      name: 'bird',
-      position: {
-        x: 50,
-        y: 55,
-      },
-      velocity: {
-        x: 0,
-        y: 0,
-      },
-      dimension: {
-        width: 10,
-        height: 8,
-      },
-      rigid: true,
-      static: false,
-      invisible: false,
-    }, {
-      name: 'PipeUp',
-      position: {
-        x: 110,
-        y: 0,
-      },
-      velocity: {
-        x: -0.9,
-        y: 0,
-      },
-      dimension: {
-        width: 15,
-        height: heightOfPipeUp,
-      },
-      rigid: true,
-      static: true,
-      invisible: false,
-    }, {
-      name: 'PipeDown',
-      position: {
-        x: 110,
-        y: positionOfPipeDown,
-      },
-      velocity: {
-        x: -0.9,
-        y: 0,
-      },
-      dimension: {
-        width: 15,
-        height: heightOfPipeDown,
-      },
-      rigid: true,
-      static: true,
-      invisible: false,
-    }, {
-      name: 'Invisible',
-      position: {
-        x: 110,
-        y: heightOfPipeUp,
-      },
-      velocity: {
-        x: -0.9,
-        y: 0,
-      },
-      dimension: {
-        width: 15,
-        height: heightOfInvisibleArea,
-      },
-      rigid: true,
-      static: true,
-      invisible: true,
-    }, {
-      name: 'PipeUp',
-      position: {
-        x: 150,
-        y: 0,
-      },
-      velocity: {
-        x: -0.9,
-        y: 0,
-      },
-      dimension: {
-        width: 15,
-        height: heightOfPipeUp,
-      },
-      rigid: true,
-      static: true,
-      invisible: false,
-    }, {
-      name: 'PipeDown',
-      position: {
-        x: 150,
-        y: positionOfPipeDown,
-      },
-      velocity: {
-        x: -0.9,
-        y: 0,
-      },
-      dimension: {
-        width: 15,
-        height: heightOfPipeDown,
-      },
-      rigid: true,
-      static: true,
-      invisible: false,
-    }, {
-      name: 'Invisible',
-      position: {
-        x: 150,
-        y: heightOfPipeUp,
-      },
-      velocity: {
-        x: -0.9,
-        y: 0,
-      },
-      dimension: {
-        width: 15,
-        height: heightOfInvisibleArea,
-      },
-      rigid: true,
-      static: true,
-      invisible: true,
-    }, {
-      name: 'Ground',
-      position: {
-        x: 0,
-        y: 80,
-      },
-      velocity: {
-        x: -1,
-        y: 0,
-      },
-      dimension: {
-        width: 100,
-        height: heightOfGround,
-      },
-      rigid: false,
-      static: true,
-      invisible: true,
-    }, {
-      name: 'Ground',
-      position: {
-        x: 100,
-        y: 80,
-      },
-      velocity: {
-        x: -1,
-        y: 0,
-      },
-      dimension: {
-        width: 100,
-        height: heightOfGround,
-      },
-      rigid: false,
-      static: true,
-      invisible: true,
-    }],
-    score: 0,
-    gameOver: false,
-    collidedArray: [],
-    start: true,
-  },
-};
-
-const game = (state = {}, action) => {
-  switch (action.type) {
-    case TICK:
-      return Object.assign({}, state, {
-        objects: update(state.objects, action.dt, state.gravity),
-        gameOver: checkForCollition(state.objects),
-        score: checkForScoreUp(state.objects, state.score, state.collidedArray).score,
-        collidedArray: checkForScoreUp(state.objects, state.score, state.collidedArray).collidedArray });
-    case BOUNCE:
-      return Object.assign({}, state, {
-        objects: bounce(state.objects),
-      });
-    case START:
-      return Object.assign({}, state, {
-        start: true,
-      });
-    case STARTAGAIN:
-      return startAgainState.game;
-    case RUNGROUNDALWAYS:
-      return Object.assign({}, state, {
-        objects: updateGroundPosition(state.objects),
-      });
-    default:
-      return state;
-  }
-};
-
-export default game;
