@@ -1,17 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {
   Text,
   View,
 } from 'react-native';
-
 import { vmin, vmax } from './../services/viewport';
 
-export default class Invisible extends Component {
-  render() {
-    return (
-      <View style={{ position: 'absolute', left: this.props.x, top: this.props.y * vmax }} >
-        <Text style={{ width: this.props.width * vmin, height: this.props.height * vmax }} />
-      </View>
-    );
-  }
-}
+export default ({ x, y, width, height }) => (
+  <View style={{ position: 'absolute', left: x, top: y * vmax }} >
+    <Text style={{ width: width * vmin, height: height * vmax }} />
+  </View>
+);

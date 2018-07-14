@@ -25,7 +25,6 @@
     "compat/compat": "off",
     "class-methods-use-this": "off",    
     "consistent-return": "off",
-    "comma-dangle": "off",
     "generator-star-spacing": "off",
     "global-require": "off",
     "max-len": 0,        

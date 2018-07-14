@@ -1,96 +1,119 @@
 import { TICK, BOUNCE, START, STARTAGAIN, RUNGROUNDALWAYS } from '../constants';
-
-import { vw, vh, vmin, vmax, heightOfPipeUp,
-  heightOfPipeDown, heightOfGround, heightOfInvisibleArea,
-  positionOfPipeDown } from '../services/viewport';
-
+import {
+  vmin,
+  vmax,
+  heightOfPipeUp,
+  heightOfPipeDown,
+  heightOfGround,
+  heightOfInvisibleArea,
+  positionOfPipeDown,
+} from '../services/viewport';
 
 function getUpdatedVelocity(newPosition, bird, timeLapsed, gravity) {
-  let updateVelocity = bird.velocity.y + timeLapsed * gravity;
+  let updateVelocity = bird.velocity.y + (timeLapsed * gravity);
   if (newPosition.y > 100) {
     updateVelocity = -(updateVelocity);
   }
-  return { x: bird.velocity.x, y: updateVelocity };
+  return {
+    x: bird.velocity.x,
+    y: updateVelocity,
+  };
 }
-
 
 function getUpdatedY(bird, timeLapsed, gravity) {
-  const distanceCovered = bird.velocity.y * timeLapsed + 0.5 * gravity * timeLapsed * timeLapsed;
-  return { x: bird.position.x, y: bird.position.y + distanceCovered };
+  const distanceCovered = (bird.velocity.y * timeLapsed) + (0.5 * gravity * timeLapsed * timeLapsed);
+  return {
+    x: bird.position.x,
+    y: bird.position.y + distanceCovered,
+  };
 }
 
-
 function getUpdatedVelocityForPipe(pipe) {
-  return { x: pipe.velocity.x, y: 0 };
+  return {
+    x: pipe.velocity.x,
+    y: 0,
+  };
 }
 
 function getUpdateDistanceForPipe(pipe, timeLapsed) {
   function getYPosition(pipeName) {
-    if (pipeName == 'PipeUp') { return 0; } else if (pipeName == 'PipeDown') { return positionOfPipeDown; } else if (pipeName == 'Invisible') { return heightOfPipeUp; }
+    if (pipeName === 'PipeUp') {
+      return 0;
+    } else if (pipeName === 'PipeDown') {
+      return positionOfPipeDown;
+    } else if (pipeName === 'Invisible') {
+      return heightOfPipeUp;
+    }
   }
-
   const distanceCovered = pipe.velocity.x;
-
   if (pipe.position.x > 0 - pipe.dimension.width) {
-    return { x: pipe.position.x + distanceCovered, y: pipe.position.y };
+    return {
+      x: pipe.position.x + distanceCovered,
+      y: pipe.position.y,
+    };
   }
-
-  return { x: 100, y: getYPosition(pipe.name) };
+  return {
+    x: 100,
+    y: getYPosition(pipe.name),
+  };
 }
-
 
 function getUpdatedGroundPosition(ground) {
   const distanceCovered = ground.velocity.x;
-
-  if (ground.position.x > -97) {
-    return { x: ground.position.x + distanceCovered, y: 80 };
-  }
-
-  return { x: 100, y: 80 };
+  return (ground.position.x > -97)
+    ? {
+      x: ground.position.x + distanceCovered,
+      y: 80,
+    }
+    : {
+      x: 100,
+      y: 80,
+    };
 }
-
 
 function updateGroundPosition(gameObjects) {
   const arr = [];
   gameObjects.map(item => {
-    if (item.static == true && item.rigid == false) {
+    if (item.static === true && item.rigid === false) {
       const newGroundPosition = getUpdatedGroundPosition(item);
-      const newGround = Object.assign({}, item, { position: newGroundPosition });
-      arr.push(newGround);
-    } else {
-      arr.push(item);
+      const newGround = Object.assign({}, item, {
+        position: newGroundPosition,
+      });
+      return arr.push(newGround);
     }
+    return arr.push(item);
   });
   return arr;
 }
 
-
 function update(gameObjects, dt = 1000 / 60, gravity = 0.0001) {
   const arr = [];
   gameObjects.map(item => {
-    if (item.static == false) {
+    let updatedVelocity;
+    if (item.static === false) {
       const newPosition = getUpdatedY(item, dt, gravity);
-      var updatedVelocity = getUpdatedVelocity(newPosition, item, dt, gravity);
-      const newBird = Object.assign(
-        {}, item,
-        { position: newPosition, velocity: updatedVelocity }
-      );
-      arr.push(newBird);
-    } else if (item.static == true && item.rigid == true) {
+      updatedVelocity = getUpdatedVelocity(newPosition, item, dt, gravity);
+      const newBird = Object.assign({}, item, {
+        position: newPosition,
+        velocity: updatedVelocity,
+      });
+      return arr.push(newBird);
+    } else if (item.static === true && item.rigid === true) {
       const newPositionOfPipe = getUpdateDistanceForPipe(item, dt);
-      var updatedVelocity = getUpdatedVelocityForPipe(item);
-      const newPipe = 	Object.assign(
-        {}, item,
-        { position: newPositionOfPipe, velocity: updatedVelocity }
-      );
-      arr.push(newPipe);
-    } else if (item.static == true && item.rigid == false) {
+      updatedVelocity = getUpdatedVelocityForPipe(item);
+      const newPipe = Object.assign({}, item, {
+        position: newPositionOfPipe,
+        velocity: updatedVelocity,
+      });
+      return arr.push(newPipe);
+    } else if (item.static === true && item.rigid === false) {
       const newGroundPosition = getUpdatedGroundPosition(item);
-      const newGround = Object.assign({}, item, { position: newGroundPosition });
-      arr.push(newGround);
-    } else {
-      arr.push(item);
+      const newGround = Object.assign({}, item, {
+        position: newGroundPosition,
+      });
+      return arr.push(newGround);
     }
+    return arr.push(item);
   });
   return arr;
 }
@@ -98,12 +121,16 @@ function update(gameObjects, dt = 1000 / 60, gravity = 0.0001) {
 function bounce(gameObjects) {
   const arr = [];
   const item = gameObjects[0];
-  const bounceUpdatedVelocity = { x: item.velocity.x, y: -0.05 };
-  const newBird = Object.assign({}, item, { velocity: bounceUpdatedVelocity });
+  const bounceUpdatedVelocity = {
+    x: item.velocity.x,
+    y: -0.05,
+  };
+  const newBird = Object.assign({}, item, {
+    velocity: bounceUpdatedVelocity,
+  });
   arr.push(newBird);
   return arr.concat(gameObjects.slice(1));
 }
-
 
 function detectCollition(bird, visibleObject) {
   const birdXPostion = bird.position.x * vmin;
@@ -116,13 +143,10 @@ function detectCollition(bird, visibleObject) {
   const visibleObjectWidth = visibleObject.dimension.width * vmin;
   const visibleObjectHeight = visibleObject.dimension.height * vmax;
 
-
-  if (birdXPostion < visibleObjectXPosition + visibleObjectWidth &&
+  return birdXPostion < visibleObjectXPosition + visibleObjectWidth &&
          birdXPostion + birdWidth > visibleObjectXPosition &&
          birdYPostion < visibleObjectYPosition + visibleObjectHeight &&
-         birdHeight + birdYPostion > visibleObjectYPosition) {
-    return true;
-  }
+         birdHeight + birdYPostion > visibleObjectYPosition;
 }
 
 function checkForCollition(gameObjects) {
@@ -133,7 +157,6 @@ function checkForCollition(gameObjects) {
   const pipeDownO = gameObjects[5];
   const ground = gameObjects[7];
   const groundO = gameObjects[8];
-
 
   if (detectCollition(bird, pipeDown)) {
     return true;
@@ -157,12 +180,10 @@ function checkForCollition(gameObjects) {
   return false;
 }
 
-
 function checkForScoreUp(gameObjects, score, collidedArray) {
   const bird = gameObjects[0];
   const invisible = gameObjects[3];
   const invisibleO = gameObjects[6];
-
 
   const birdXPostion = bird.position.x * vmin;
   const birdYPostion = bird.position.y * vmax;
@@ -184,200 +205,196 @@ function checkForScoreUp(gameObjects, score, collidedArray) {
          birdXPostion + birdWidth > invisibleXPosition &&
          birdYPostion < invisibleYPosition + invisibleHeight &&
          birdHeight + birdYPostion > invisibleYPosition) {
-    if (collidedArray.length == 0) {
+    if (collidedArray.length === 0) {
       score++;
     }
-    return { score, collidedArray: [invisible.name] };
+    return {
+      score,
+      collidedArray: [invisible.name],
+    };
   }
   if (birdXPostion < invisibleOXPosition + invisibleOWidth &&
        birdXPostion + birdWidth > invisibleOXPosition &&
        birdYPostion < invisibleOYPosition + invisibleOHeight &&
        birdHeight + birdYPostion > invisibleOYPosition) {
-    if (collidedArray.length == 0) {
+    if (collidedArray.length === 0) {
       score++;
     }
-    return { score, collidedArray: [invisible.name] };
+    return {
+      score,
+      collidedArray: [invisible.name],
+    };
   }
 
-  return { score, collidedArray: [] };
+  return {
+    score,
+    collidedArray: [],
+  };
 }
 
 const startAgainState = {
   game: {
     gravity: 0.0001,
-    objects: [
-      {
-        name: 'bird',
-        position: {
-          x: 50,
-          y: 55
-        },
-        velocity: {
-          x: 0,
-          y: 0
-        },
-        dimension: {
-          width: 10,
-          height: 8
-        },
-        rigid: true,
-        static: false,
-        invisible: false
+    objects: [{
+      name: 'bird',
+      position: {
+        x: 50,
+        y: 55,
       },
-      {
-        name: 'PipeUp',
-        position: {
-          x: 110,
-          y: 0
-        },
-        velocity: {
-          x: -0.9,
-          y: 0
-        },
-        dimension: {
-          width: 15,
-          height: heightOfPipeUp
-        },
-        rigid: true,
-        static: true,
-        invisible: false
+      velocity: {
+        x: 0,
+        y: 0,
       },
-      {
-        name: 'PipeDown',
-        position: {
-          x: 110,
-          y: positionOfPipeDown
-        },
-        velocity: {
-          x: -0.9,
-          y: 0
-        },
-        dimension: {
-          width: 15,
-          height: heightOfPipeDown
-        },
-        rigid: true,
-        static: true,
-        invisible: false
+      dimension: {
+        width: 10,
+        height: 8,
       },
-      {
-        name: 'Invisible',
-        position: {
-          x: 110,
-          y: heightOfPipeUp
-        },
-        velocity: {
-          x: -0.9,
-          y: 0
-        },
-        dimension: {
-          width: 15,
-          height: heightOfInvisibleArea
-        },
-        rigid: true,
-        static: true,
-        invisible: true
+      rigid: true,
+      static: false,
+      invisible: false,
+    }, {
+      name: 'PipeUp',
+      position: {
+        x: 110,
+        y: 0,
       },
-      {
-        name: 'PipeUp',
-        position: {
-          x: 150,
-          y: 0
-        },
-        velocity: {
-          x: -0.9,
-          y: 0
-        },
-        dimension: {
-          width: 15,
-          height: heightOfPipeUp
-        },
-        rigid: true,
-        static: true,
-        invisible: false
+      velocity: {
+        x: -0.9,
+        y: 0,
       },
-      {
-        name: 'PipeDown',
-        position: {
-          x: 150,
-          y: positionOfPipeDown
-        },
-        velocity: {
-          x: -0.9,
-          y: 0
-        },
-        dimension: {
-          width: 15,
-          height: heightOfPipeDown
-        },
-        rigid: true,
-        static: true,
-        invisible: false
+      dimension: {
+        width: 15,
+        height: heightOfPipeUp,
       },
-      {
-        name: 'Invisible',
-        position: {
-          x: 150,
-          y: heightOfPipeUp
-        },
-        velocity: {
-          x: -0.9,
-          y: 0
-        },
-        dimension: {
-          width: 15,
-          height: heightOfInvisibleArea
-        },
-        rigid: true,
-        static: true,
-        invisible: true
+      rigid: true,
+      static: true,
+      invisible: false,
+    }, {
+      name: 'PipeDown',
+      position: {
+        x: 110,
+        y: positionOfPipeDown,
       },
-
-      {
-        name: 'Ground',
-        position: {
-          x: 0,
-          y: 80
-        },
-        velocity: {
-          x: -1,
-          y: 0
-        },
-        dimension: {
-          width: 100,
-          height: heightOfGround
-        },
-        rigid: false,
-        static: true,
-        invisible: true
+      velocity: {
+        x: -0.9,
+        y: 0,
       },
-
-      {
-        name: 'Ground',
-        position: {
-          x: 100,
-          y: 80
-        },
-        velocity: {
-          x: -1,
-          y: 0
-        },
-        dimension: {
-          width: 100,
-          height: heightOfGround
-        },
-        rigid: false,
-        static: true,
-        invisible: true
-      }
-    ],
+      dimension: {
+        width: 15,
+        height: heightOfPipeDown,
+      },
+      rigid: true,
+      static: true,
+      invisible: false,
+    }, {
+      name: 'Invisible',
+      position: {
+        x: 110,
+        y: heightOfPipeUp,
+      },
+      velocity: {
+        x: -0.9,
+        y: 0,
+      },
+      dimension: {
+        width: 15,
+        height: heightOfInvisibleArea,
+      },
+      rigid: true,
+      static: true,
+      invisible: true,
+    }, {
+      name: 'PipeUp',
+      position: {
+        x: 150,
+        y: 0,
+      },
+      velocity: {
+        x: -0.9,
+        y: 0,
+      },
+      dimension: {
+        width: 15,
+        height: heightOfPipeUp,
+      },
+      rigid: true,
+      static: true,
+      invisible: false,
+    }, {
+      name: 'PipeDown',
+      position: {
+        x: 150,
+        y: positionOfPipeDown,
+      },
+      velocity: {
+        x: -0.9,
+        y: 0,
+      },
+      dimension: {
+        width: 15,
+        height: heightOfPipeDown,
+      },
+      rigid: true,
+      static: true,
+      invisible: false,
+    }, {
+      name: 'Invisible',
+      position: {
+        x: 150,
+        y: heightOfPipeUp,
+      },
+      velocity: {
+        x: -0.9,
+        y: 0,
+      },
+      dimension: {
+        width: 15,
+        height: heightOfInvisibleArea,
+      },
+      rigid: true,
+      static: true,
+      invisible: true,
+    }, {
+      name: 'Ground',
+      position: {
+        x: 0,
+        y: 80,
+      },
+      velocity: {
+        x: -1,
+        y: 0,
+      },
+      dimension: {
+        width: 100,
+        height: heightOfGround,
+      },
+      rigid: false,
+      static: true,
+      invisible: true,
+    }, {
+      name: 'Ground',
+      position: {
+        x: 100,
+        y: 80,
+      },
+      velocity: {
+        x: -1,
+        y: 0,
+      },
+      dimension: {
+        width: 100,
+        height: heightOfGround,
+      },
+      rigid: false,
+      static: true,
+      invisible: true,
+    }],
     score: 0,
     gameOver: false,
     collidedArray: [],
-    start: true
-  }
+    start: true,
+  },
 };
-
 
 const game = (state = {}, action) => {
   switch (action.type) {
@@ -388,13 +405,19 @@ const game = (state = {}, action) => {
         score: checkForScoreUp(state.objects, state.score, state.collidedArray).score,
         collidedArray: checkForScoreUp(state.objects, state.score, state.collidedArray).collidedArray });
     case BOUNCE:
-      return Object.assign({}, state, { objects: bounce(state.objects) });
+      return Object.assign({}, state, {
+        objects: bounce(state.objects),
+      });
     case START:
-      return Object.assign({}, state, { start: true });
+      return Object.assign({}, state, {
+        start: true,
+      });
     case STARTAGAIN:
       return startAgainState.game;
     case RUNGROUNDALWAYS:
-      return Object.assign({}, state, { objects: updateGroundPosition(state.objects) });
+      return Object.assign({}, state, {
+        objects: updateGroundPosition(state.objects),
+      });
     default:
       return state;
   }

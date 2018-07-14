@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import {
   View,
-  Image
+  Image,
 } from 'react-native';
 
 import { vmin, vmax } from './../services/viewport';
 
 export default class Score extends Component {
-  getImageSourceLink(num) {
+  getImageSourceLink = (num) => {
     switch (num) {
       case '0':
         return require('./../images/flappybird_00.png');
@@ -34,17 +34,17 @@ export default class Score extends Component {
     }
   }
 
-
   render() {
-    const scoreString = this.props.score.toString();
+    const { score } = this.props;
+    const scoreString = score.toString();
     const scoreArray = [];
     for (let index = 0; index < scoreString.length; index++) {
       scoreArray.push(scoreString[index]);
     }
     return (
       <View style={{ position: 'absolute', left: 47 * vmin, top: 20 * vmax, flexDirection: 'row' }} >
-        { scoreArray.map((item, index) => <Image key={index} resizeMode="stretch" source={this.getImageSourceLink(item)} />) }
-
+        {scoreArray.map((item, index) =>
+          <Image key={index} resizeMode="stretch" source={this.getImageSourceLink(item)} />)}
       </View>
     );
   }
