@@ -63,15 +63,15 @@ export default class Bird extends Component {
       >
         <View style={{ marginTop: -(margin) * vmin }}>
           <Image
-            source={require('./../images/bird1.png')}
+            source={require('./../images/frog1.png')}
             style={{ width: 10 * vmin, height: 10 * vmin }}
           />
           <Image
-            source={require('./../images/bird2.png')}
+            source={require('./../images/frog2.png')}
             style={{ width: 10 * vmin, height: 10 * vmin }}
           />
           <Image
-            source={require('./../images/bird3.png')}
+            source={require('./../images/frog3.png')}
             style={{ width: 10 * vmin, height: 10 * vmin }}
           />
         </View>
